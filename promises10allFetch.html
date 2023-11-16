@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Promisses 6</title>
+</head>
+<body>
+       
+    <h1 id="texto1">JavaScript Functions</h1>
+        
+    
+    <h1 id="texto2"></h1>
+    
+    <script>
+
+
+let texto=document.querySelector("#texto2");
+async function promessa1() { 
+
+    const url='https://viacep.com.br/ws/96201460/json/';
+    let resposta=  await fetch(url);
+    let js = await resposta.text();
+    js ="<br>Promessa1<br>"+js+"<br>";
+    return js;
+};
+
+async function promessa2 () { 
+    const url='https://viacep.com.br/ws/96201470/json/';
+    let resposta=  await fetch(url);
+    let js = await resposta.text();
+    js ="<br>Promessa2<br>"+js+"<br>";
+    return js;
+};
+
+async function promessa3 () { 
+    const url='https://viacep.com.br/ws/96201480/json/';
+    let resposta=  await fetch(url);
+    let js = await resposta.text();
+    js ="<br>Promessa3<br>"+js+"<br>";
+    return js;
+};
+
+Promise.all([promessa1(),promessa2(),promessa3()])
+.then((value)=> {texto.innerHTML+=value;})
+.catch((err)=>{texto.innerHTML+="Erro:<br> "+err;});
+
+//race, any,all
+    </script>
+    
+
+</body>
+</html>
