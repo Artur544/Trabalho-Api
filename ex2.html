@@ -1,3 +1,13 @@
+<!-- {
+    "cep": "89010025",
+    "state": "SC",
+    "city": "Blumenau",
+    "neighborhood": "Centro",
+    "street": "Rua Doutor Luiz de Freitas Melro",
+    "service": "viacep"
+} -->
+
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -6,13 +16,38 @@
         <title>Document</title>
     </head>
     <body>
-        
+        <input type="text" id="cep">
+        <input type="button" id="botao" value="Pesquisar" onclick="pegaDados()">
+
+        <div id="mostra"></div>
     </body>
 
     <script>
         async function pegaDados()
         {
+            const url = "https://brasilapi.com.br/api/cep/v1/" + cep
+            let div = document.querySelector("#mostra");
+            let cep = document.querySelector("#cep ").value;
+            let resposta = await fetch(url);
+            let dados = await resposta.json();
             
+
+            // dados.forEach((pais, index)=> {
+            //     option = dados[index].nome_pais;
+            //     let option1 = document.createElement("option");
+            //     option1.setAttribute('value', dados[index].sigla);
+            //     option1.innerText = option;
+            //     nome.appendChild(option1);
+            // });
+
+            div.innerHTML = 
+                "<h2>Estas são as informações de " + cep + 
+                ":</h2><h3>Estado: " + dados.state + 
+                "</h3><h3>Cidade: " + dados.city +
+                "</h3><h3>Vizinhança: " + dados.neighborhood +
+                "</h3><h3>Rua: " + dados.street +
+                "</h3><h3>Serviço: " + dados.service + "</h3>";
         }
+
     </script>
 </html>

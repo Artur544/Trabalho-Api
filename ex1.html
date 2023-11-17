@@ -5,6 +5,77 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Document</title>
+
+        <style>
+            body
+            {
+                background-color: rgb(143, 65, 216);
+                margin: 0px;
+            }
+    
+            #conteudo
+            {
+                display: flex;
+                flex-direction: column;
+                padding: 50px;
+            }
+    
+            #selecione-pais
+            {
+                display: flex;
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 30px;
+            }
+    
+            #nome-pais
+            {
+                border: none;
+                border-radius: 15px;
+                height: 45px;
+                min-width: 150px;
+                max-width: 400px;
+                font-weight: bold;
+                font-size: large;
+                padding-left: 15px;
+            }
+    
+            #botao
+            {
+                border: none;
+                border-radius: 15px;
+                font-weight: bold;
+                font-size: medium;
+                padding: 15px;
+                background-color: rgb(230, 178, 246);
+                cursor: pointer;
+            }
+    
+            #mostra
+            {
+                background-color: white;
+                text-align: left;
+                padding: 10px 30px;
+                border-radius: 20px;
+                margin-top: 30px;
+                font-family: "Open Sans", sans-serif;
+                display: none;
+            }
+    
+            #mostra > h2
+            {
+                text-align: center;
+                font-size: clamp(1rem, 2.5vw, 2rem);
+            }
+    
+            #mostra > h3
+            {
+                font-size: clamp(0.7rem, 1.5vw, 1.2rem);
+            }
+    
+        </style>
+
     </head>
     <body>
 
@@ -20,132 +91,62 @@
             <div id="mostra"></div>
 
         </div>
-        
-    </body>
+
+        <script>
+            const url = "/paises.json";
     
-    <style>
-        body
-        {
-            background-color: rgb(143, 65, 216);
-            margin: 0px;
-        }
-
-        #conteudo
-        {
-            display: flex;
-            flex-direction: column;
-            padding: 50px;
-        }
-
-        #selecione-pais
-        {
-            display: flex;
-            flex-direction: row;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 30px;
-        }
-
-        #nome-pais
-        {
-            border: none;
-            border-radius: 15px;
-            height: 45px;
-            min-width: 150px;
-            max-width: 400px;
-            font-weight: bold;
-            font-size: large;
-            padding-left: 15px;
-        }
-
-        #botao
-        {
-            border: none;
-            border-radius: 15px;
-            font-weight: bold;
-            font-size: medium;
-            padding: 15px;
-            background-color: rgb(230, 178, 246);
-            cursor: pointer;
-        }
-
-        #mostra
-        {
-            background-color: white;
-            text-align: left;
-            padding: 10px 30px;
-            border-radius: 20px;
-            margin-top: 30px;
-            font-family: "Open Sans", sans-serif;
-            display: none;
-        }
-
-        #mostra > h2
-        {
-            text-align: center;
-            font-size: clamp(1rem, 2.5vw, 2rem);
-        }
-
-        #mostra > h3
-        {
-            font-size: clamp(0.7rem, 1.5vw, 1.2rem);
-        }
-
-    </style>
-    
-    <script>
-        const url = "/paises.json";
-
-        async function pegaDados()
-        {
-            let div = document.querySelector("#mostra");
-            let nome = document.querySelector("#nome-pais");
-            let resposta = await fetch(url);
-            let dados = await resposta.json();
-            
-
-            dados.forEach((pais, index)=> {
-                option = dados[index].nome_pais;
-                let option1 = document.createElement("option");
-                option1.setAttribute('value', dados[index].sigla);
-                option1.innerText = option;
-                nome.appendChild(option1);
-            });
-        }
-
-        async function pesquisar()
-        {
-            let sigla = document.querySelector("#nome-pais").value;
-            if (sigla != "selecione")
+            async function pegaDados()
             {
                 let div = document.querySelector("#mostra");
+                let nome = document.querySelector("#nome-pais");
                 let resposta = await fetch(url);
                 let dados = await resposta.json();
-                let informacoes = document.querySelector("#mostra");
-                informacoes.style.display = "block";
-
-                for (c = 0; c < dados.length; c++)
+                
+    
+                dados.forEach((pais, index)=> {
+                    option = dados[index].nome_pais;
+                    let option1 = document.createElement("option");
+                    option1.setAttribute('value', dados[index].sigla);
+                    option1.innerText = option;
+                    nome.appendChild(option1);
+                });
+            }
+    
+            async function pesquisar()
+            {
+                let sigla = document.querySelector("#nome-pais").value;
+                if (sigla != "selecione")
                 {
-                    if (dados[c].sigla == sigla)
+                    let div = document.querySelector("#mostra");
+                    let resposta = await fetch(url);
+                    let dados = await resposta.json();
+                    div.style.display = "block";
+                    
+                    for (c = 0; c < dados.length; c++)
                     {
-                        let gentilico = dados[c].gentilico;
-                        let nome_pais = dados[c].nome_pais;
-                        let nome_pais_int = dados[c].nome_pais_int;
-
-                        div.innerHTML = 
-                            "<h2>Estas são as informações de " + nome_pais + 
-                            ":</h2><h3>Gentílico: " + gentilico + 
-                            "</h3><h3>Nome em Inglês: " + nome_pais_int +
-                            "</h3><h3>Sigla: " + sigla + "</h3>";
+                        if (dados[c].sigla == sigla)
+                        {
+                            let gentilico = dados[c].gentilico;
+                            let nome_pais = dados[c].nome_pais;
+                            let nome_pais_int = dados[c].nome_pais_int;
+    
+                            div.innerHTML = 
+                                "<h2>Estas são as informações de " + nome_pais + 
+                                ":</h2><h3>Gentílico: " + gentilico + 
+                                "</h3><h3>Nome em Inglês: " + nome_pais_int +
+                                "</h3><h3>Sigla: " + sigla + "</h3>";
+                        }
                     }
                 }
+                else
+                {
+                    alert("Selecione um País");
+                }
             }
-            else
-            {
-                alert("Selecione um País");
-            }
-        }
+    
+            pegaDados();
+        </script>
+        
+    </body>
 
-        pegaDados();
-    </script>
 </html>
