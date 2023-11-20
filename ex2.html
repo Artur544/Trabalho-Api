@@ -16,29 +16,41 @@
         <title>Document</title>
     </head>
     <body>
-        <input type="text" id="cep">
-        <input type="button" id="botao" value="Pesquisar" onclick="pegaDados()">
+        <div id="conteudo">
 
-        <div id="mostra"></div>
+            <div>
+                <input type="text" id="cep" placeholder="Coloque um CEP">
+                <input type="button" id="botao" value="Pesquisar" onclick="pegaCEP()">
+            </div>
+
+            <div id="mostra1"></div>
+
+
+            <div>
+                <input type="text" id="ddd" placeholder="Coloque um DDD">
+                <input type="button" id="botao" value="Pesquisar" onclick="pegaDDD()">
+            </div>
+            
+            <div id="mostra2"></div>
+
+            <div>
+                <input type="text" id="cptec" placeholder="Coloque um CPTEC">
+                <input type="button" id="botao" value="Pesquisar" onclick="pegaCPTEC()">
+            </div>
+            
+            <div id="mostra3"></div>
+            
+        </div>
     </body>
 
     <script>
-        async function pegaDados()
+        async function pegaCEP()
         {
-            const url = "https://brasilapi.com.br/api/cep/v1/" + cep
-            let div = document.querySelector("#mostra");
-            let cep = document.querySelector("#cep ").value;
-            let resposta = await fetch(url);
+            let div = document.querySelector("#mostra1");
+            let cep = document.querySelector("#cep").value;
+            const url1 = "https://brasilapi.com.br/api/cep/v1/" + cep;
+            let resposta = await fetch(url1);
             let dados = await resposta.json();
-            
-
-            // dados.forEach((pais, index)=> {
-            //     option = dados[index].nome_pais;
-            //     let option1 = document.createElement("option");
-            //     option1.setAttribute('value', dados[index].sigla);
-            //     option1.innerText = option;
-            //     nome.appendChild(option1);
-            // });
 
             div.innerHTML = 
                 "<h2>Estas são as informações de " + cep + 
@@ -47,6 +59,47 @@
                 "</h3><h3>Vizinhança: " + dados.neighborhood +
                 "</h3><h3>Rua: " + dados.street +
                 "</h3><h3>Serviço: " + dados.service + "</h3>";
+        }
+
+        async function pegaDDD()
+        {
+            let div = document.querySelector("#mostra2");
+            let ddd = document.querySelector("#ddd").value;
+            const url2 = "https://brasilapi.com.br/api/ddd/v1/" + ddd;
+            let resposta = await fetch(url2);
+            let dados = await resposta.json();
+
+            div.innerHTML = 
+                "<h2>Estas são as informações de " + ddd + 
+                ":</h2><h3>Estado: " + dados.state + 
+                "</h3><h3>Municípios: </h3><ul id='lista-cidade'></ul>" 
+            
+            let lista = document.querySelector("#lista-cidade");
+            
+            dados.cities.forEach((cidade, index)=> {
+                    let texto = dados.cities[index];
+                    let linha = document.createElement("li");
+                    linha.setAttribute('id', "cidade-" + index);
+                    linha.innerText = texto;
+                    lista.appendChild(linha);
+                });
+
+
+        }
+
+        async function pegaCidade()
+        {
+            let div = document.querySelector("#mostra3");
+            let cidade = document.querySelector("#nome-cidade").value;
+            let id = document.querySelector("#nome-cidade").id;
+            const url3 = "https://brasilapi.com.br/api/cptec/v1/cidade/sao";
+            let resposta = await fetch(url3);
+            let dados = await resposta.json();
+
+            div.innerHTML = 
+                "<h2>Este é o CPTEC de " + cidade + 
+                ":</h2><h3>CPTEC: " + dados.id;
+
         }
 
     </script>
