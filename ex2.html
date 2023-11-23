@@ -1,41 +1,30 @@
-<!-- {
-    "cep": "89010025",
-    "state": "SC",
-    "city": "Blumenau",
-    "neighborhood": "Centro",
-    "street": "Rua Doutor Luiz de Freitas Melro",
-    "service": "viacep"
-} -->
-
-
 <!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Document</title>
+        <title>Exercício 2</title>
     </head>
     <body>
         <div id="conteudo">
 
             <div>
-                <input type="text" id="cep" placeholder="Coloque um CEP">
-                <input type="button" id="botao" value="Pesquisar" onclick="pegaCEP()">
+                <input type="number" id="cep" placeholder="Coloque um CEP">
+                <input type="button" id="botao1" value="Pesquisar" onclick="consulta(1)">
             </div>
 
             <div id="mostra1"></div>
 
-
             <div>
-                <input type="text" id="ddd" placeholder="Coloque um DDD">
-                <input type="button" id="botao" value="Pesquisar" onclick="pegaDDD()">
+                <input type="number" id="ddd" placeholder="Coloque um DDD">
+                <input type="button" id="botao2" value="Pesquisar" onclick="consulta(2)">
             </div>
             
             <div id="mostra2"></div>
 
             <div>
-                <input type="text" id="cptec" placeholder="Coloque um CPTEC">
-                <input type="button" id="botao" value="Pesquisar" onclick="pegaCPTEC()">
+                <input type="number" id="ano" placeholder="Coloque um ano">
+                <input type="button" id="botao3" value="Pesquisar" onclick="consulta(3)">
             </div>
             
             <div id="mostra3"></div>
@@ -44,16 +33,94 @@
     </body>
 
     <script>
-        async function pegaCEP()
+        async function consulta(numero)
+        {
+            if (numero == 1)
+            {
+                let cep = document.querySelector("#cep").value;
+                
+                if (cep.length == 8)
+                {
+                    let url = "https://brasilapi.com.br/api/cep/v1/" + cep;
+                    try
+                    {
+                        let resposta = await fetch(url);
+                        let dados = await resposta.json();
+                        pegaCEP(dados);
+                    }
+
+                    catch (err)
+                    {
+                        console.log(err);
+                    }
+                }
+
+                else 
+                {
+                    alert("CEP inválido, o número de caracteres tem que ser exatamente 8")
+                }
+            }
+
+            else if (numero == 2)
+            {
+                let ddd = document.querySelector("#ddd").value;
+
+                if (ddd.length == 2)
+                {
+                    let url = "https://brasilapi.com.br/api/ddd/v1/" + ddd;
+                    try
+                    {
+                        let resposta = await fetch(url);
+                        let dados = await resposta.json();
+                        pegaDDD(dados);
+                    }
+
+                    catch (err)
+                    {
+                        console.log(err);
+                    }
+                }
+                
+                else
+                {
+                    alert("DDD inválido, o número de caracteres tem que ser exatamente 2")
+                }
+            }
+            
+            else
+            {
+                let ano = document.querySelector("#ano").value;
+
+                if (ano >= 1900 && ano <= 2199)
+                {
+                    let url = "https://brasilapi.com.br/api/feriados/v1/" + ano;
+                    try
+                    {
+                        let resposta = await fetch(url);
+                        let dados = await resposta.json();
+                        pegaAno(dados);
+                    }
+
+                    catch (err)
+                    {
+                        console.log(err);
+                    }
+                }
+                
+                else
+                {
+                    alert("Ano inválido, o intervalo suportado é entre 1900 e 2199")
+                }
+            }
+
+        }
+
+        async function pegaCEP(dados)
         {
             let div = document.querySelector("#mostra1");
-            let cep = document.querySelector("#cep").value;
-            const url1 = "https://brasilapi.com.br/api/cep/v1/" + cep;
-            let resposta = await fetch(url1);
-            let dados = await resposta.json();
 
             div.innerHTML = 
-                "<h2>Estas são as informações de " + cep + 
+                "<h2>Estas são as informações de " + dados.cep + 
                 ":</h2><h3>Estado: " + dados.state + 
                 "</h3><h3>Cidade: " + dados.city +
                 "</h3><h3>Vizinhança: " + dados.neighborhood +
@@ -61,17 +128,12 @@
                 "</h3><h3>Serviço: " + dados.service + "</h3>";
         }
 
-        async function pegaDDD()
+        async function pegaDDD(dados)
         {
             let div = document.querySelector("#mostra2");
-            let ddd = document.querySelector("#ddd").value;
-            const url2 = "https://brasilapi.com.br/api/ddd/v1/" + ddd;
-            let resposta = await fetch(url2);
-            let dados = await resposta.json();
 
             div.innerHTML = 
-                "<h2>Estas são as informações de " + ddd + 
-                ":</h2><h3>Estado: " + dados.state + 
+                "<h3>Estado: " + dados.state + 
                 "</h3><h3>Municípios: </h3><ul id='lista-cidade'></ul>" 
             
             let lista = document.querySelector("#lista-cidade");
@@ -79,26 +141,46 @@
             dados.cities.forEach((cidade, index)=> {
                     let texto = dados.cities[index];
                     let linha = document.createElement("li");
-                    linha.setAttribute('id', "cidade-" + index);
+                    linha.setAttribute("class", "cidades");
                     linha.innerText = texto;
                     lista.appendChild(linha);
                 });
-
-
         }
 
-        async function pegaCidade()
+        async function pegaAno(dados)
         {
             let div = document.querySelector("#mostra3");
-            let cidade = document.querySelector("#nome-cidade").value;
-            let id = document.querySelector("#nome-cidade").id;
-            const url3 = "https://brasilapi.com.br/api/cptec/v1/cidade/sao";
-            let resposta = await fetch(url3);
-            let dados = await resposta.json();
 
             div.innerHTML = 
-                "<h2>Este é o CPTEC de " + cidade + 
-                ":</h2><h3>CPTEC: " + dados.id;
+                "</h2><h3>Feriados: <ul id='lista-datas'></ul>";
+                
+            let lista = document.querySelector("#lista-datas");
+
+            for (q = 0; q < dados.length; q++)
+            {
+                let nome = dados[q].name;
+                let data = dados[q].date;
+                let tipo = dados[q].type;
+
+                let linha_desc = document.createElement("li");
+                let conteudo = document.createElement("ul");
+                let linha_data = document.createElement("li");
+                let linha_tipo = document.createElement("li");
+                let br = document.createElement("br");
+                
+                linha_desc.setAttribute("class", "feriado-nome");
+                linha_desc.innerText = nome;
+                linha_data.setAttribute("class", "feriado-datas");
+                linha_data.innerText = data;
+                linha_tipo.setAttribute("class", "feriado-tipo");
+                linha_tipo.innerText = tipo;
+
+                conteudo.appendChild(linha_data);
+                conteudo.appendChild(linha_tipo);                   
+                conteudo.appendChild(br);                   
+                lista.appendChild(linha_desc);
+                lista.appendChild(conteudo);
+            }
 
         }
 
