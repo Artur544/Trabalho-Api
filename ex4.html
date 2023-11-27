@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Exercício 4</title>
+
+        <style>
+            body
+            {
+                background-color: rgb(143, 65, 216);
+                margin: 0px;
+            }
+    
+            #conteudo
+            {
+                display: flex;
+                flex-direction: column;
+                padding: 50px;
+            }
+
+            #conteudo > h1
+            {
+                text-align: center;
+                color: white;
+            }
+    
+            .botao
+            {
+                border: none;
+                border-radius: 15px;
+                font-weight: bold;
+                font-size: medium;
+                padding: 15px;
+                background-color: rgb(230, 178, 246);
+                cursor: pointer;
+            }
+    
+            .mostra
+            {
+                background-color: white;
+                text-align: left;
+                padding: 10px 30px;
+                border-radius: 20px;
+                margin-top: 30px;
+                font-family: "Open Sans", sans-serif;
+                display: none;
+            }
+    
+        </style>
+    </head>
+    <body>
+
+        <div id="conteudo">
+            <h1>Promise Any</h1>
+            <button class="botao" onclick="promiseAny()">Carregar</button>
+
+            <div class="mostra" id="mostra1"></div>
+
+            <h1>Promise Race</h1>
+            <button class="botao" onclick="promiseRace()">Carregar</button>
+
+            <div class="mostra" id="mostra2"></div>
+
+            <h1>Promise All</h1>
+            <button class="botao" onclick="promiseAll()">Carregar</button>
+
+            <div class="mostra" id="mostra3"></div>
+        </div>
+
+        <script>
+
+            const url = ['https://jsonplaceholder.typicode.com/posts/1', 'https://jsonplaceholder.typicode.com/todos/1', 'https://jsonplaceholder.typicode.com/comments/1'];
+
+            async function promiseAny() 
+            {
+                let div = document.querySelector("#mostra1");
+
+                try 
+                {
+                    const resultado = await Promise
+                        .any(url.map(url => fetch(url)
+                        .then(response => response.json())));
+
+                    div.style.display = "block";
+                    div.innerText = JSON.stringify(resultado, null, 2);
+                } 
+                catch (error) 
+                {
+                    console.error("Erro:", error);
+                    div.innerText = "Erro: Todas as promessas foram rejeitadas";
+                }
+            }
+
+            async function promiseRace() 
+            {
+                let div = document.querySelector("#mostra2");
+
+                try 
+                {
+                    const resultado = await Promise
+                        .race(url.map(url => fetch(url)
+                        .then(response => response.json())));
+
+                    div.style.display = "block";
+                    div.innerText = JSON.stringify(resultado, null, 2);
+                } 
+                catch (error) 
+                {
+                    console.error("Erro:", error);
+                    div.innerText = "Erro: A primeira promessa resolvida foi rejeitada";
+                }
+            }
+
+            async function promiseAll() 
+            {
+                let div = document.querySelector("#mostra3");
+
+                try 
+                {
+                    const resultados = await Promise
+                        .all(url.map(url => fetch(url)
+                        .then(response => response.json())));
+
+                    div.style.display = "block";
+                    div.innerText = JSON.stringify(resultados, null, 2);
+                } 
+                catch (error) 
+                {
+                    console.error("Erro:", error);
+                    div.innerText = "Erro: Pelo menos uma promessa foi rejeitada";
+                }
+            }
+
+        </script>
+
+    </body>
+</html>

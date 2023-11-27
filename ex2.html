@@ -4,237 +4,335 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Exercício 2</title>
+
+        <style>
+            body
+            {
+                background-color: rgb(143, 65, 216);
+                margin: 0px;
+            }
+    
+            #conteudo
+            {
+                display: flex;
+                flex-direction: column;
+                padding: 50px;
+                gap: 20px;
+            }
+    
+            .div-input
+            {
+                display: flex;
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 30px;
+            }
+
+            .div-input > h2
+            {
+                color: white;
+            }
+    
+            .select
+            {
+                border: none;
+                border-radius: 15px;
+                height: 45px;
+                min-width: 150px;
+                max-width: 400px;
+                font-weight: bold;
+                font-size: large;
+                padding-left: 15px;
+            }
+    
+            #botao1, #botao2, #botao3
+            {
+                border: none;
+                border-radius: 15px;
+                font-weight: bold;
+                font-size: medium;
+                padding: 15px;
+                background-color: rgb(230, 178, 246);
+                cursor: pointer;
+            }
+    
+            .mostra
+            {
+                background-color: white;
+                text-align: left;
+                padding: 10px 30px;
+                border-radius: 20px;
+                margin-top: 30px;
+                font-family: "Open Sans", sans-serif;
+                display: none;
+            }
+    
+            .mostra > h2
+            {
+                text-align: center;
+                font-size: clamp(1rem, 2.5vw, 2rem);
+            }
+    
+            .mostra > h3
+            {
+                font-size: clamp(0.7rem, 1.5vw, 1.2rem);
+            }
+
+            #sw
+            {
+                display: flex;
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content:    space-around;
+                gap: 30px;
+            }
+    
+        </style>
     </head>
     <body>
         <div id="conteudo">
 
-            <div>
-                <input type="number" id="cep" placeholder="Coloque um CEP">
+            <div class="div-input">
+                <h2 >Informações de um CEP:</h2>
+                <input type="number" class="select" id="cep" placeholder="Coloque um CEP">
                 <input type="button" id="botao1" value="Pesquisar" onclick="consulta(1)">
             </div>
 
-            <div id="mostra1"></div>
+            <div class="mostra" id="mostra1"></div>
 
-            <div>
-                <input type="number" id="ddd" placeholder="Coloque um DDD">
+            <div class="div-input">
+                <h2>Municípios de um DDD:</h2>
+                <input type="number" class="select" id="ddd" placeholder="Coloque um DDD">
                 <input type="button" id="botao2" value="Pesquisar" onclick="consulta(2)">
             </div>
 
-            <div id="mostra2"></div>
+            <div class="mostra" id="mostra2"></div>
 
-            <div>
-                <input type="number" id="ano" placeholder="Coloque um ano">
+            <div class="div-input">
+                <h2>Feriádos de um ano:</h2>
+                <input type="number" class="select" id="ano" placeholder="Coloque um ano">
                 <input type="button" id="botao3" value="Pesquisar" onclick="consulta(3)">
             </div>
 
-            <div id="mostra3"></div>
+            <div class="mostra" id="mostra3"></div>
 
-            <div id="mostra4"></div>
+            <div class="mostra" id="mostra4"></div>
 
         </div>
-    </body>
 
-    <script>
-        async function consulta(numero)
-        {
-            if (numero == 1)
+        <script>
+            async function consulta(numero)
+            {
+                if (numero == 1)
+                {
+                    let cep = document.querySelector("#cep").value;
+                    
+                    if (cep.length == 8)
+                    {
+                        let url = "https://brasilapi.com.br/api/cep/v1/" + cep;
+                        try
+                        {
+                            let resposta = await fetch(url);
+                            let dados = await resposta.json();
+                            await pegaCEP(dados);
+                            //await antews da função
+                        }
+
+                        catch (err)
+                        {
+                            console.log(err);
+                        }
+                    }
+
+                    else 
+                    {
+                        alert("CEP inválido, o número de caracteres tem que ser exatamente 8");
+                    }
+                }
+
+                else if (numero == 2)
+                {
+                    let ddd = document.querySelector("#ddd").value;
+
+                    if (ddd.length == 2)
+                    {
+                        let url = "https://brasilapi.com.br/api/ddd/v1/" + ddd;
+                        try
+                        {
+                            let resposta = await fetch(url);
+                            let dados = await resposta.json();
+                            await pegaDDD(dados);
+                        }
+                        catch (err)
+                        {
+                            console.log(err);
+                        }
+                    }
+                    
+                    else
+                    {
+                        alert("DDD inválido, o número de caracteres tem que ser exatamente 2");
+                    }
+                }
+                
+                else
+                {
+                    let ano = document.querySelector("#ano").value;
+
+                    if (ano >= 1900 && ano <= 2199)
+                    {
+                        let url = "https://brasilapi.com.br/api/feriados/v1/" + ano;
+                        try
+                        {
+                            let resposta = await fetch(url);
+                            let dados = await resposta.json();
+                            await pegaAno(dados);
+                        }
+
+                        catch (err)
+                        {
+                            console.log(err);
+                        }
+                    }
+                    
+                    else
+                    {
+                        alert("Ano inválido, o intervalo suportado é entre 1900 e 2199");
+                    }
+                }
+            }
+
+            async function pegaCEP(dados)
             {
                 let cep = document.querySelector("#cep").value;
-                
-                if (cep.length == 8)
+                if (dados.name != "CepPromiseError")
                 {
-                    let url = "https://brasilapi.com.br/api/cep/v1/" + cep;
-                    try
-                    {
-                        let resposta = await fetch(url);
-                        let dados = await resposta.json();
-                        pegaCEP(dados);
-                    }
+                    let div = document.querySelector("#mostra1");
+                    div.style.display = "block";
 
-                    catch (err)
-                    {
-                        console.log(err);
-                    }
+                    div.innerHTML = 
+                        "<h2>Estas são as informações de " + cep + 
+                        ":</h2><h3>Estado: " + dados.state + 
+                        "</h3><h3>Cidade: " + dados.city +
+                        "</h3><h3>Vizinhança: " + dados.neighborhood +
+                        "</h3><h3>Rua: " + dados.street +
+                        "</h3><h3>Serviço: " + dados.service + "</h3>";
                 }
-
-                else 
+                else
                 {
-                    alert("CEP inválido, o número de caracteres tem que ser exatamente 8");
+                    alert("Erro: CEP " + cep + " não encontrado");
+                    console.error(dados);
                 }
             }
 
-            else if (numero == 2)
+            async function pegaDDD(dados)
             {
                 let ddd = document.querySelector("#ddd").value;
-
-                if (ddd.length == 2)
+                if (dados.type != "ddd_error")
                 {
-                    let url = "https://brasilapi.com.br/api/ddd/v1/" + ddd;
-                    try
-                    {
-                        let resposta = await fetch(url);
-                        let dados = await resposta.json();
-                        pegaDDD(dados);
-                    }
-                    catch (err)
-                    {
-                        console.log(err);
-                    }
+                    let div = document.querySelector("#mostra2");
+                    div.style.display = "block";
+
+                    div.innerHTML = 
+                        "<h2>Estas são as informações de " + ddd + 
+                        ":</h2><h3>Estado: " + dados.state + 
+                        "</h3><h3>Municípios: </h3><ul id='lista-cidade'></ul>" 
+                    
+                    let lista = document.querySelector("#lista-cidade");
+                    
+                    dados.cities.forEach((cidade, index) => {
+                            let texto = dados.cities[index];
+                            let linha = document.createElement("li");
+                            linha.setAttribute("class", "cidades");
+                            linha.innerText = texto;
+                            lista.appendChild(linha);
+                        });
                 }
-                
                 else
                 {
-                    alert("DDD inválido, o número de caracteres tem que ser exatamente 2");
+                    alert("Erro: DDD " + ddd + " não encontrado");
+                    console.error(dados);
                 }
             }
-            
-            else
+
+            async function pegaAno(dados)
             {
                 let ano = document.querySelector("#ano").value;
-
-                if (ano >= 1900 && ano <= 2199)
+                if (dados.type != "feriados_range_error")
                 {
-                    let url = "https://brasilapi.com.br/api/feriados/v1/" + ano;
-                    try
-                    {
-                        let resposta = await fetch(url);
-                        let dados = await resposta.json();
-                        pegaAno(dados);
-                    }
+                    let div = document.querySelector("#mostra3");
+                    div.style.display = "block";
 
-                    catch (err)
+                    div.innerHTML = 
+                        "<h2>Estas são as informações de " + ano + 
+                        ":</h2><h3>Feriados: <ul id='lista-datas'></ul>";
+
+                    let lista = document.querySelector("#lista-datas");
+
+                    for (q = 0; q < dados.length; q++)
                     {
-                        console.log(err);
+                        let nome = dados[q].name;
+                        let data = dados[q].date;
+                        let tipo = dados[q].type;
+
+                        let linha_desc = document.createElement("li");
+                        let conteudo = document.createElement("ul");
+                        let linha_data = document.createElement("li");
+                        let linha_tipo = document.createElement("li");
+                        let br = document.createElement("br");
+
+                        linha_desc.setAttribute("class", "feriado-nome");
+                        linha_desc.innerText = nome;
+                        linha_data.setAttribute("class", "feriado-datas");
+                        linha_data.innerText = data;
+                        linha_tipo.setAttribute("class", "feriado-tipo");
+                        linha_tipo.innerText = tipo;
+
+                        conteudo.appendChild(linha_data);
+                        conteudo.appendChild(linha_tipo);                   
+                        conteudo.appendChild(br);                   
+                        lista.appendChild(linha_desc);
+                        lista.appendChild(conteudo);
                     }
                 }
                 
                 else
                 {
-                    alert("Ano inválido, o intervalo suportado é entre 1900 e 2199");
+                    alert("Erro: ano " + ano + " não encontrado");
+                    console.error(dados);
                 }
             }
-        }
 
-        async function pegaCEP(dados)
-        {
-            let cep = document.querySelector("#cep").value;
-            if (dados.name != "CepPromiseError")
+            async function minhasApis()
             {
-                let div = document.querySelector("#mostra1");
-
-                div.innerHTML = 
-                    "<h2>Estas são as informações de " + cep + 
-                    ":</h2><h3>Estado: " + dados.state + 
-                    "</h3><h3>Cidade: " + dados.city +
-                    "</h3><h3>Vizinhança: " + dados.neighborhood +
-                    "</h3><h3>Rua: " + dados.street +
-                    "</h3><h3>Serviço: " + dados.service + "</h3>";
-            }
-            else
-            {
-                alert("Erro: CEP " + cep + " não encontrado");
-                console.error(dados);
-            }
-        }
-
-        async function pegaDDD(dados)
-        {
-            let ddd = document.querySelector("#ddd").value;
-            if (dados.type != "ddd_error")
-            {
-                let div = document.querySelector("#mostra2");
-
-                div.innerHTML = 
-                    "<h2>Estas são as informações de " + ddd + 
-                    ":</h2><h3>Estado: " + dados.state + 
-                    "</h3><h3>Municípios: </h3><ul id='lista-cidade'></ul>" 
+                let div = document.querySelector("#mostra4");
+                div.style.display = "block";
+                let url = ["https://swapi.dev/api/planets/1/", "https://swapi.dev/api/planets/2/", "https://swapi.dev/api/planets/3/"];
                 
-                let lista = document.querySelector("#lista-cidade");
-                
-                dados.cities.forEach((cidade, index)=> {
-                        let texto = dados.cities[index];
-                        let linha = document.createElement("li");
-                        linha.setAttribute("class", "cidades");
-                        linha.innerText = texto;
-                        lista.appendChild(linha);
-                    });
-            }
-            else
-            {
-                alert("Erro: DDD " + ddd + " não encontrado");
-                console.error(dados);
-            }
-        }
+                let resposta1 = await fetch(url[0]);
+                let resposta2 = await fetch(url[1]);
+                let resposta3 = await fetch(url[2]);
 
-        async function pegaAno(dados)
-        {
-            let ano = document.querySelector("#ano").value;
-            if (dados.type != "feriados_range_error")
-            {
-                let div = document.querySelector("#mostra3");
+                let dados1 = await resposta1.json();
+                let dados2 = await resposta2.json();
+                let dados3 = await resposta3.json();
 
                 div.innerHTML = 
-                    "<h2>Estas são as informações de " + ano + 
-                    ":</h2><h3>Feriados: <ul id='lista-datas'></ul>";
-
-                let lista = document.querySelector("#lista-datas");
-
-                for (q = 0; q < dados.length; q++)
-                {
-                    let nome = dados[q].name;
-                    let data = dados[q].date;
-                    let tipo = dados[q].type;
-
-                    let linha_desc = document.createElement("li");
-                    let conteudo = document.createElement("ul");
-                    let linha_data = document.createElement("li");
-                    let linha_tipo = document.createElement("li");
-                    let br = document.createElement("br");
-
-                    linha_desc.setAttribute("class", "feriado-nome");
-                    linha_desc.innerText = nome;
-                    linha_data.setAttribute("class", "feriado-datas");
-                    linha_data.innerText = data;
-                    linha_tipo.setAttribute("class", "feriado-tipo");
-                    linha_tipo.innerText = tipo;
-
-                    conteudo.appendChild(linha_data);
-                    conteudo.appendChild(linha_tipo);                   
-                    conteudo.appendChild(br);                   
-                    lista.appendChild(linha_desc);
-                    lista.appendChild(conteudo);
-                }
+                    "<h2>Planetas de Star Wars:</h2>" +
+                    "<div id='sw'>" +
+                        "<div><h3>Nome: " + dados1.name + 
+                        "</h3><h3>População: " + dados1.population + "</h3></div>" +
+                        "<div><h3>Nome: " + dados2.name + 
+                        "</h3><h3>População: " + dados2.population + "</h3></div>" +
+                        "<div><h3>Nome: " + dados3.name + 
+                        "</h3><h3>População: " + dados3.population + "</h3></div>" +
+                    "</div>";
             }
-            
-            else
-            {
-                alert("Erro: ano " + ano + " não encontrado");
-                console.error(dados);
-            }
-        }
 
-        async function minhasApis()
-        {
-            let div = document.querySelector("#mostra4")
-            let url = ["https://swapi.dev/api/planets/1/", "https://swapi.dev/api/planets/2/", "https://swapi.dev/api/planets/3/"]
-            let resposta1 = await fetch(url[0]);
-            let resposta2 = await fetch(url[1]);
-            let resposta3 = await fetch(url[2]);
-            let dados1 = await resposta1.json();
-            let dados2 = await resposta2.json();
-            let dados3 = await resposta3.json();
+            minhasApis();
 
-            div.innerHTML = 
-                "<h2>Planetas de Star Wars:</h2>" +
-                "<div class='sw'><h3>Nome: " + dados1.name + 
-                "</h3><h3>População: " + dados1.population + "</h3></div>" +
-                "<div class='sw'><h3>Nome: " + dados2.name + 
-                "</h3><h3>População: " + dados2.population + "</h3></div>" +
-                "<div class='sw'><h3>Nome: " + dados3.name + 
-                "</h3><h3>População: " + dados3.population + "</h3></div>";
-        }
+        </script>
+    </body>
 
-        minhasApis();
-
-    </script>
 </html>

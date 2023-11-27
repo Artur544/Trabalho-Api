@@ -102,7 +102,7 @@
                 let dados = await resposta.json();
                 
     
-                dados.forEach((pais, index)=> {
+                dados.forEach((pais, index) => {
                     option = dados[index].nome_pais;
                     let option1 = document.createElement("option");
                     option1.setAttribute('value', dados[index].sigla);

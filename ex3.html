@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Exercício 3</title>
+
+        <style>
+            body
+            {
+                background-color: rgb(143, 65, 216);
+                margin: 0px;
+            }
+    
+            #conteudo
+            {
+                display: flex;
+                flex-direction: column;
+                padding: 50px;
+            }
+    
+            #selecione-metadado
+            {
+                display: flex;
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 30px;
+            }
+    
+            #metadados
+            {
+                border: none;
+                border-radius: 15px;
+                height: 45px;
+                min-width: 150px;
+                max-width: 400px;
+                font-weight: bold;
+                font-size: large;
+                padding-left: 15px;
+            }
+    
+            #botao
+            {
+                border: none;
+                border-radius: 15px;
+                font-weight: bold;
+                font-size: medium;
+                padding: 15px;
+                background-color: rgb(230, 178, 246);
+                cursor: pointer;
+            }
+    
+            #mostra
+            {
+                background-color: white;
+                text-align: left;
+                padding: 10px 30px;
+                border-radius: 20px;
+                margin-top: 30px;
+                font-family: "Open Sans", sans-serif;
+                display: none;
+            }
+    
+            #mostra > h2
+            {
+                text-align: center;
+                font-size: clamp(1rem, 2.5vw, 2rem);
+            }
+    
+            #mostra > h3
+            {
+                font-size: clamp(0.7rem, 1.5vw, 1.2rem);
+            }
+    
+            #div-tab
+            {
+                display: flex;
+                justify-content: center;
+            }
+
+            table, td, th
+            {
+                padding: 10px;
+                border: 1px solid black;
+                border-collapse: collapse;
+            }
+
+            th
+            {
+                text-align: center;
+                font-size: clamp(1rem, 2.5vw, 2rem);
+            }
+
+            td
+            {
+                font-size: clamp(0.7rem, 1.5vw, 1.2rem);
+            }
+            
+        </style>
+    </head>
+    <body>
+        <div id="conteudo">
+
+            <div id="selecione-metadado">
+                <select id="metadados">
+                    <option value="selecione" selected disabled hidden>Selecione um Metadado</option>
+                </select>
+                <input type="button" id="botao" value="Pesquisar" onclick="pesquisar()">
+            </div>
+
+            <div id="mostra"></div>
+
+        </div>
+
+        <script>
+            const url = ["http://www.ipeadata.gov.br/api/odata4/Metadados('HIST_SALARCARP')", "http://www.ipeadata.gov.br/api/odata4/Metadados('BPAG4_PEEMPBLP4')", "http://www.ipeadata.gov.br/api/odata4/Metadados('BPN_FINIDBDES')"];
+
+            async function pegaDados()
+            {
+                let metadado = document.querySelector("#metadados");
+
+                let resposta1 = await fetch(url[0]);
+                let resposta2 = await fetch(url[1]);
+                let resposta3 = await fetch(url[2]);
+
+                let dados1 = await resposta1.json();
+                let dados2 = await resposta2.json();
+                let dados3 = await resposta3.json();
+
+                console.log(dados1);
+                
+                let option1 = document.createElement("option");
+                let option2 = document.createElement("option");
+                let option3 = document.createElement("option");
+                
+                let meta1 = dados1.value[0].SERNOME;
+                let meta2 = dados2.value[0].SERNOME;
+                let meta3 = dados3.value[0].SERNOME;
+
+                console.log(meta1);
+
+                option1.setAttribute('value', "0");
+                option2.setAttribute('value', "1");
+                option3.setAttribute('value', "2");
+
+                option1.innerText = meta1;
+                option2.innerText = meta2;
+                option3.innerText = meta3;
+
+                console.log(option1);
+
+                metadado.appendChild(option1);
+                metadado.appendChild(option2);
+                metadado.appendChild(option3);
+                
+            }
+
+            async function pesquisar()
+            {
+                let metadado = document.querySelector("#metadados").value;
+                if (metadado != "selecione")
+                {
+                    try 
+                    {
+                        let div = document.querySelector("#mostra");
+                        div.style.display = "block";
+
+                        let resposta = await fetch(url[metadado]);
+                        let dados = await resposta.json();
+
+                        div.innerHTML = 
+                        `<h2>Tabela:</h2>
+                        <div id="div-tab">
+                            <table id="tabela">
+                                <thead>
+                                    <tr> 
+                                        <th> Dados </th>
+                                        <th> Descrição </th>
+                                    </tr>
+                                </thead>
+                                <tbody id="body-tab">
+                                    <tr>
+                                        <td>Nome:</th>
+                                        <td>${dados.value[0].SERNOME}</th>
+                                    </tr>
+                                    <tr>
+                                        <td>Código de País:</th>
+                                        <td>${dados.value[0].PAICODIGO}</th>
+                                    </tr>
+                                    <tr>
+                                        <td>Período:</th>
+                                        <td>${dados.value[0].PERNOME}</th>
+                                    </tr>
+                                    <tr>
+                                        <td>Unidade:</th>
+                                        <td>${dados.value[0].UNINOME}</th>
+                                    </tr>
+                                    <tr>
+                                        <td>Código:</th>
+                                        <td>${dados.value[0].TEMCODIGO}</th>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <h2>Sobre:</h2>
+                        <p>${dados.value[0].SERCOMENTARIO}</p>`;
+                    }
+
+                    catch (err)
+                    {
+                        console.log("Erro: " + err);
+                        div.innerHTML = "<h2>Erro ao carregar</h2>";
+                    }
+                }
+            }
+
+            pegaDados();
+        </script>
+
+    </body>
+</html>
